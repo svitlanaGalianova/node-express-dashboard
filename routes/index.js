@@ -7,7 +7,7 @@ const { body } = require("express-validator");
 
 /* GET home page. */
 router.get("/", (req, res, next) => {
-  res.render("index", { title: "Log Dashboard" });
+  res.render("index", { title: "Log Dashboard", logFile: req.query.logFile });
 });
 
 /* GET select file. */
@@ -30,19 +30,19 @@ router.post("/settings", [
 ], (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.render("settings", { 
-      title: "Settings", 
-      errors: errors.array()[0].msg, 
-      settings: getSettings() 
+    return res.render("settings", {
+      title: "Settings",
+      errors: errors.array()[0].msg,
+      settings: getSettings()
     });
   }
 
   const saved = writeSettings(req.body)
-  res.render("settings", { 
-    message: saved ? "Settings Saved" : "", 
+  res.render("settings", {
+    message: saved ? "Settings Saved" : "",
     errors: saved ? "" : "Settings not saved",
-    title: "Settings", 
-    settings: getSettings() 
+    title: "Settings",
+    settings: getSettings()
   });
 })
 
