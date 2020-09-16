@@ -9,7 +9,9 @@ const debug = require("debug")("log-dashboard:server");
 const http = require("http");
 const WebSocket = require("ws");
 const fs = require("fs");
-const { file } = require("jscodeshift");
+const getSettings = require("../services/settings-service").getSettings;
+
+const settings = getSettings()
 /**
  * Get port from environment and store in Express.
  */
@@ -35,6 +37,9 @@ wss.on("connection", (ws) => {
     fs.watch(filePath, () => {
       fs.createReadStream(filePath).on("data", chunk => {
         var logsArr = chunk.toString().split("\n")
+        if (settings.filter) {
+          logsArr = logsArr.filter(line => !line.includes(settings.filter));
+        }
         var logsStr = logsArr.reverse().join("\n")
         ws.send(logsStr)
       })
